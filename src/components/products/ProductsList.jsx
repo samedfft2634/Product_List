@@ -8,15 +8,30 @@ import { useState,useEffect } from "react";
 const ProductsList = () => {
   const [selectedBtn,setSelectedBtn]= useState("all")
   const [getProduct, setGetProduct] = useState(products)
- useEffect(() => {
-  if(selectedBtn === "all"){
-    setGetProduct(products)
-  } else{
-    const filteredProduct = products.filter(product=> product.category === selectedBtn)
-    setGetProduct(filteredProduct)
+  const [searchTerm, setSearchTerm] = useState(""); /// GPT
+  
+  const handleChange = (e)=>{
+    const value = e.target.value.toLowerCase()
+    setSearchTerm(value)
+   const filteredProducts = products.filter((product) =>
+   selectedBtn === "all"
+     ? product.title.toLowerCase().includes(value)
+     : product.category === selectedBtn &&
+       product.title.toLowerCase().includes(value)
+ );
+   setGetProduct(filteredProducts)
   }
- }, [selectedBtn])
- 
+
+
+  useEffect(() => {
+    const filteredProducts = products.filter((product) =>
+      selectedBtn === "all"
+        ? product.title.toLowerCase().includes(searchTerm)
+        : product.category === selectedBtn &&
+          product.title.toLowerCase().includes(searchTerm)
+    );
+    setGetProduct(filteredProducts);
+  }, [selectedBtn]);
 
   return (
     <>
@@ -25,6 +40,7 @@ const ProductsList = () => {
         placeholder="Search Product..."
         type="search"
         className="w-50 m-auto"
+        onChange={handleChange}
       />
       <Container className="product-list rounded-4 my-4 p-3">
         <Row className="g-3 justify-content-center gap-3">
